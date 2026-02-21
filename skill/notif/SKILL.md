@@ -29,7 +29,7 @@ notif --topic other-channel "Override topic"
 | `--priority` | `-p` | `1`=min, `2`=low, `3`=default, `4`=high, `5`=max |
 | `--tags` | `-T` | Comma-separated tags/emojis |
 | `--click` | | URL to open on tap |
-| `--file` | | Local file attachment |
+| `--file` | | Upload local file to storage provider, attach public URL |
 | `--attach` | | Remote URL attachment |
 | `--md` | | Markdown formatting |
 | `--delay` | | Schedule: `10s`, `30m`, ISO timestamp |
@@ -58,12 +58,24 @@ This applies to `--click` URLs, URLs in message body, and any other link.
 - `notif cfg init` — interactive setup (TTY)
 - `notif cfg set <key> <value>` — set value (`server`, `topic`; secrets via stdin)
 - `notif cfg unset <key>` — remove value
-- `notif doctor` — verify setup (config, server reachability)
+- `notif doctor` — verify setup (config, server reachability, storage provider)
+
+### Config keys
+
+| Key | Description |
+|-----|-------------|
+| `server` | ntfy server URL |
+| `topic` | Default topic |
+| `user` | Auth user:pass (secret, set via stdin) |
+| `token` | Auth token (secret, set via stdin) |
+| `upload_provider` | Storage provider for `--file` uploads (e.g. `yadisk`) |
+| `upload_path` | Remote directory for uploads (default: `/notif-uploads`) |
 
 ## Errors
 
 | Message | Cause |
 |---------|-------|
+| `No storage provider configured` | Run `notif cfg set upload_provider yadisk` |
 | `No server configured` | Run `notif cfg set server <url>` |
 | `No topic configured` | Run `notif cfg set topic <name>` |
 | `ntfy error 401` | Auth failed |

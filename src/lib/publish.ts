@@ -1,4 +1,5 @@
 import { readConfig } from "./config.ts";
+import { getStorageProvider, buildRemotePath } from "./storage.ts";
 
 export interface PublishOptions {
 	server?: string;
@@ -18,6 +19,8 @@ export interface PublishOptions {
 	noFirebase?: boolean;
 	sequenceId?: string;
 	file?: string;
+	uploadProvider?: string;
+	uploadPath?: string;
 	user?: string;
 	token?: string;
 }
@@ -59,41 +62,24 @@ export async function publish(message: string | undefined, opts: PublishOptions)
 		authHeaders["Authorization"] = `Basic ${btoa(user)}`;
 	}
 
-	// File upload via PUT (must use headers for metadata)
+	// File upload via external storage provider → attach URL
 	if (opts.file) {
 		const file = Bun.file(opts.file);
 		if (!(await file.exists())) {
 			throw new Error(`File not found: ${opts.file}`);
 		}
 
-		const headers: Record<string, string> = { ...authHeaders };
-		if (opts.title) headers["Title"] = opts.title;
-		if (opts.priority) headers["Priority"] = opts.priority;
-		if (opts.tags) headers["Tags"] = opts.tags;
-		if (opts.click) headers["Click"] = opts.click;
-		if (opts.icon) headers["Icon"] = opts.icon;
-		if (opts.delay) headers["Delay"] = opts.delay;
-		if (opts.email) headers["Email"] = opts.email;
-		if (opts.actions) headers["Actions"] = opts.actions;
-		if (opts.markdown) headers["Markdown"] = "yes";
-		if (opts.noCache) headers["Cache"] = "no";
-		if (opts.noFirebase) headers["Firebase"] = "no";
-		if (opts.sequenceId) headers["X-Sequence-ID"] = opts.sequenceId;
-		headers["Filename"] = opts.filename || opts.file.split("/").pop() || opts.file;
-		if (message) headers["Message"] = message;
-
-		const resp = await fetch(`${baseUrl}/${topic}`, {
-			method: "PUT",
-			headers,
-			body: file,
-		});
-
-		if (!resp.ok) {
-			const text = await resp.text();
-			throw new Error(`ntfy error ${resp.status}: ${text}`);
+		const uploadProvider = opts.uploadProvider || process.env.NOTIF_UPLOAD_PROVIDER || config.upload_provider;
+		if (!uploadProvider) {
+			throw new Error("No storage provider configured. Run: notif config set upload_provider yadisk");
 		}
 
-		return (await resp.json()) as PublishResult;
+		const uploadPath = opts.uploadPath || process.env.NOTIF_UPLOAD_PATH || config.upload_path || "/uploads/notif-cli";
+		const remotePath = buildRemotePath(uploadPath, opts.file, opts.filename);
+		const provider = getStorageProvider(uploadProvider);
+		const publicUrl = await provider.upload(opts.file, remotePath);
+
+		if (!opts.click) opts.click = publicUrl;
 	}
 
 	// Regular message via JSON body (supports UTF-8 in all fields)

@@ -10,11 +10,13 @@ const ConfigSchema = z.object({
 	topic: z.string().optional(),
 	user: z.string().optional(),
 	token: z.string().optional(),
+	upload_provider: z.string().optional(),
+	upload_path: z.string().optional(),
 });
 
 export type Config = z.infer<typeof ConfigSchema>;
 
-const VALID_KEYS = ["server", "topic", "user", "token"] as const;
+const VALID_KEYS = ["server", "topic", "user", "token", "upload_provider", "upload_path"] as const;
 type ConfigKey = (typeof VALID_KEYS)[number];
 
 export function isValidKey(key: string): key is ConfigKey {

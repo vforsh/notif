@@ -83,6 +83,31 @@ const checks: Check[] = [
 		},
 	},
 	{
+		name: "Storage provider",
+		run: async () => {
+			const cfg = await readConfig();
+			const provider = process.env.NOTIF_UPLOAD_PROVIDER || cfg.upload_provider;
+			if (!provider) {
+				return {
+					status: "warn",
+					detail: "not configured (file uploads disabled)",
+					hint: "notif cfg set upload_provider yadisk",
+				};
+			}
+
+			const { KNOWN_PROVIDERS } = await import("../../lib/storage.ts");
+			if (!KNOWN_PROVIDERS.includes(provider)) {
+				return {
+					status: "fail",
+					detail: `unknown provider: ${provider}`,
+					hint: `known providers: ${KNOWN_PROVIDERS.join(", ")}`,
+				};
+			}
+
+			return { status: "pass", detail: provider };
+		},
+	},
+	{
 		name: "Server reachable",
 		run: async () => {
 			const cfg = await readConfig();
