@@ -1,0 +1,36 @@
+{
+  "name": "@vforsh/notif",
+  "version": "0.1.0",
+  "description": "CLI for sending push notifications via ntfy",
+  "type": "module",
+  "license": "MIT",
+  "author": "Vladislav Forsh <vforsh@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vforsh/notif.git"
+  },
+  "bin": {
+    "notif": "bin/notif"
+  },
+  "files": [
+    "bin",
+    "src",
+    "skill"
+  ],
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "bun test",
+    "cmd": "bun run bin/notif"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "commander": "^14.0.3",
+    "picocolors": "^1.1.1",
+    "zod": "^4.3.6"
+  }
+}
