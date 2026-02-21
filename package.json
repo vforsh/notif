@@ -1,6 +1,6 @@
 {
   "name": "@vforsh/notif",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "CLI for sending push notifications via ntfy",
   "type": "module",
   "license": "MIT",

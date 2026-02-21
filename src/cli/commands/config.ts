@@ -70,6 +70,7 @@ export function registerConfigCommand(program: Command) {
 			const topic = await prompt("topic", current.topic);
 			const upload_provider = await prompt("upload_provider", current.upload_provider);
 			const upload_path = await prompt("upload_path", current.upload_path);
+			const lan_ip = await prompt("lan_ip", current.lan_ip);
 			const user = await prompt("user", current.user, true);
 			const token = await prompt("token", current.token, true);
 
@@ -78,6 +79,7 @@ export function registerConfigCommand(program: Command) {
 			if (topic) updated.topic = topic;
 			if (upload_provider) updated.upload_provider = upload_provider;
 			if (upload_path) updated.upload_path = upload_path;
+			if (lan_ip) updated.lan_ip = lan_ip;
 			if (user) updated.user = user;
 			if (token) updated.token = token;
 

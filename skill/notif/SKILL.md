@@ -43,12 +43,13 @@ notif --topic other-channel "Override topic"
 
 **NEVER send `localhost` or `127.0.0.1` URLs in notifications.** Notifications arrive on mobile devices on the same Wi-Fi network — localhost is unreachable there.
 
-Replace with the machine's LAN IP before sending:
+Use `lan_ip` from config (check with `notif cfg ls`) instead:
 
 ```bash
-LAN_IP=$(ipconfig getifaddr en0)
-notif --click "http://$LAN_IP:3000" "Dev server ready"
+notif --click "http://192.168.1.12:3000" "Dev server ready"
 ```
+
+Fallback if `lan_ip` is not configured: `ipconfig getifaddr en0`.
 
 This applies to `--click` URLs, URLs in message body, and any other link.
 
@@ -70,6 +71,7 @@ This applies to `--click` URLs, URLs in message body, and any other link.
 | `token` | Auth token (secret, set via stdin) |
 | `upload_provider` | Storage provider for `--file` uploads (e.g. `yadisk`) |
 | `upload_path` | Remote directory for uploads (default: `/notif-uploads`) |
+| `lan_ip` | Machine's LAN IP — use instead of `localhost` in notification URLs |
 
 ## Errors
 
